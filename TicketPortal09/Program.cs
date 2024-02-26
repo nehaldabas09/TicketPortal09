@@ -1,0 +1,120 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
+using TicketPortal09.Data;
+
+
+
+
+namespace TicketPortal09
+{
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
+
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Add services to the container.
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            
+            builder.Services.AddDbContext<TicketDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+       //     builder.Services.AddDbContext<TicketDbContext>(options =>
+       //options.UseSqlServer(connectionString));
+
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<TicketDbContext>();
+
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
+
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseMigrationsEndPoint();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapRazorPages();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                var roles = new[] { "Admin", "Manager", "Agent" };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                        await roleManager.CreateAsync(new IdentityRole(role));
+
+                }
+
+            }
+           /* using (var scope = app.Services.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+                string email = "admin@admin.com";
+                string password = "Test1234,";
+
+                if (await userManager.FindByEmailAsync(email) == null)
+                {
+                    var user = new IdentityUser();
+                    user.UserName = email;
+                    user.Email = email;
+
+                    await userManager.CreateAsync(user, password);
+
+                    await userManager.AddToRoleAsync(user, "Admin");
+                }
+                */
+            
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+                await CreateRoleForEmail(userManager, "manager@example.com", "Manager");
+                await CreateRoleForEmail(userManager, "agent@example.com", "Agent");
+                await CreateRoleForEmail(userManager, "admin@example.com", "Admin");
+            }
+
+            app.Run();
+        }
+
+        private static async Task CreateRoleForEmail(UserManager<IdentityUser> userManager, string email, string role)
+        {
+            if (await userManager.FindByEmailAsync(email) == null)
+            {
+                var user = new IdentityUser { UserName = email, Email = email };
+                await userManager.CreateAsync(user, "Password123!");
+                await userManager.AddToRoleAsync(user, role);
+            }
+        }
+    }
+}
