@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using TicketPortal09.Models;
 
 namespace TicketPortal09.Areas.Identity.Pages.Account
 {
@@ -116,8 +117,8 @@ namespace TicketPortal09.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user, Input.Password);
-
+                var result = await _userManager.CreateAsync(user, Input.Password); 
+                
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");

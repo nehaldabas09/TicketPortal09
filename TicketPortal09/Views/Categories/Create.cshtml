@@ -4,6 +4,26 @@
     ViewData["Title"] = "Create";
 }
 
+<style>
+    .glassmorphic-button {
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 -2px 6px rgba(255, 255, 255, 0.3);
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 10px;
+        transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+        text-decoration: none;
+        margin-right: 10px; /* Adjust spacing between buttons */
+    }
+
+        .glassmorphic-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+            color: #000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 -2px 8px rgba(255, 255, 255, 0.5);
+        }
+</style>
+
 <h1>Create</h1>
 
 <h4>Category</h4>
@@ -17,8 +37,10 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="glassmorphic-button" />
+                <a href="@Url.Action("SubcategoryIndex", "SubCategories")" class="glassmorphic-button">Add Subcategory</a>
             </div>
         </form>
     </div>
@@ -29,5 +51,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

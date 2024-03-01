@@ -1,0 +1,31 @@
+﻿@model List<TicketPortal09.Models.Ticket>
+
+<h1>Tickets</h1>
+<p>
+    <a asp-action="CreateTicket">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ticket in Model)
+        {
+            <tr>
+                <td>@ticket.Title</td>
+                <td>@ticket.Description</td>
+                <td>@ticket.Status</td>
+                <td>
+                    <a asp-action="EditTicket" asp-controller="Admin" asp-route-id="@ticket.TicketId">Edit</a> |
+                    <a asp-action="DeleteTicket" asp-route-id="@ticket.TicketId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    
+</table>

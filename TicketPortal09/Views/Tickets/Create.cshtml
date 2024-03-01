@@ -1,0 +1,113 @@
+﻿@model TicketPortal09.Models.Ticket
+
+<style>
+    /* Glassmorphic style */
+    .glassmorphic-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        margin-top: 20px;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    .glassmorphic-form {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        color: #fff;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 8px;
+        padding: 10px;
+        margin-top: 5px;
+        color: #fff;
+    }
+
+        .form-control:focus {
+            outline: none;
+            box-shadow: none;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+    .form-select {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 8px;
+        padding: 10px;
+        margin-top: 5px;
+        color: #fff;
+    }
+
+        .form-select:focus {
+            outline: none;
+            box-shadow: none;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+    .form-btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+        .form-btn:hover {
+            background-color: #45a049;
+        }
+</style>
+
+<form asp-action="Create" class="glassmorphic-container glassmorphic-form">
+    <div class="form-group">
+        <label asp-for="Title" class="control-label form-label">Title</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="control-label form-label">Description</label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CategoryId" class="control-label form-label">Category</label>
+        <select asp-for="CategoryId" class="form-select">
+            <option value="">Select Category</option>
+            @foreach (var category in ViewBag.CategoryId)
+            {
+                <option value="@category.Value">@category.Text</option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="SubCategoryId" class="control-label form-label">Subcategory</label>
+        <select asp-for="SubCategoryId" class="form-select">
+            <option value="">Select Subcategory</option>
+            @foreach (var subcategory in ViewBag.SubCategoryId)
+            {
+                <option value="@subcategory.Value">@subcategory.Text</option>
+            }
+        </select>
+        <span asp-validation-for="SubCategoryId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <br/>
+        <button type="submit" class="form-btn">Create</button>
+    </div>
+    <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="AgentId" />
+</form>
+

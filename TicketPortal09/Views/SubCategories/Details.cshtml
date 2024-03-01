@@ -1,4 +1,4 @@
-﻿@model TicketPortal09.Models.Category
+﻿@model TicketPortal09.Models.SubCategory
 
 @{
     ViewData["Title"] = "Details";
@@ -27,20 +27,20 @@
         margin-top: 20px;
     }
 
-    .category-details-list {
+    .subcategory-details-list {
         margin-bottom: 20px;
     }
 
-    .category-detail-label {
+    .subcategory-detail-label {
         font-weight: bold;
         color: #fff; /* Change color as needed */
     }
 
-    .category-detail-value {
+    .subcategory-detail-value {
         color: #fff; /* Change color as needed */
     }
 
-    .category-actions {
+    .subcategory-actions {
         text-align: center;
     }
 
@@ -60,17 +60,22 @@
 </style>
 
 <div class="glassmorphic-container">
-    <h1 class="glassmorphic-heading">Category Details</h1>
+    <h1 class="glassmorphic-heading">SubCategory Details</h1>
 
     <div class="glassmorphic-content">
-        <div class="category-details-list">
-            <span class="category-detail-label">Name:</span>
-            <span class="category-detail-value">@Html.DisplayFor(model => model.Name)</span>
+        <div class="subcategory-details-list">
+            <span class="subcategory-detail-label">Name:</span>
+            <span class="subcategory-detail-value">@Html.DisplayFor(model => model.Name)</span>
         </div>
 
-        <div class="category-actions">
-            <a asp-action="Edit" asp-route-id="@Model?.CategoryId" class="glassmorphic-button">Edit</a>
-            <a asp-action="Index" class="glassmorphic-button">Back to List</a>
+        <div class="subcategory-details-list">
+            <span class="subcategory-detail-label">Category:</span>
+            <span class="subcategory-detail-value">@Html.DisplayFor(model => model.Category.Name)</span>
+        </div>
+
+        <div class="subcategory-actions">
+            <a asp-action="Edit" asp-route-id="@Model?.SubcategoryId" class="glassmorphic-button">Edit</a>
+            <a asp-action="SubcategoryIndex" class="glassmorphic-button">Back to List</a>
         </div>
     </div>
 </div>

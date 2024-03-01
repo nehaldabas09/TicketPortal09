@@ -14,5 +14,7 @@ namespace TicketPortal09.Models
         public Category Category { get; set; }
         
         public int CategoryId { get; set; }
-    }
+        public ICollection<Ticket> Tickets { get; set; }
+       
+    } 
 }

@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TicketPortal09.Data;
-using TicketPortal09.Data.Migrations;
+
 using TicketPortal09.Models;
 
 namespace TicketPortal09.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly TicketDbContext _context;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(TicketDbContext context)
         {
             _context = context;
         }
@@ -156,4 +156,3 @@ namespace TicketPortal09.Controllers
         }
     }
 }
-*/
