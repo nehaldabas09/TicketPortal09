@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using TicketPortal09.Data;
-
-
-
+using Lamar.Microsoft.DependencyInjection;
+using TicketPortal09.Application;
+using Serilog;
 
 namespace TicketPortal09
 {
@@ -12,17 +11,14 @@ namespace TicketPortal09
     {
         public static async Task Main(string[] args)
         {
-
             var builder = WebApplication.CreateBuilder(args);
+
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            
+
             builder.Services.AddDbContext<TicketDbContext>(options =>
                 options.UseSqlServer(connectionString));
-
-       //     builder.Services.AddDbContext<TicketDbContext>(options =>
-       //options.UseSqlServer(connectionString));
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -30,8 +26,20 @@ namespace TicketPortal09
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<TicketDbContext>();
 
+            var logger = new LoggerConfiguration()
+             .ReadFrom.Configuration(builder.Configuration)
+             .Enrich.FromLogContext()
+            .CreateLogger();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog(logger);
+
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+
+            //Lamar Config
+            builder.Services.AddLamar(new ApplicationRegistry());
+            builder.Host.UseLamar();
 
             var app = builder.Build();
 
@@ -43,7 +51,6 @@ namespace TicketPortal09
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -52,14 +59,19 @@ namespace TicketPortal09
 
             app.UseRouting();
 
-            app.UseAuthentication();
+
             app.UseAuthorization();
 
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+            });
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-            app.MapRazorPages();
+
+
 
             using (var scope = app.Services.CreateScope())
             {
@@ -71,29 +83,8 @@ namespace TicketPortal09
                 {
                     if (!await roleManager.RoleExistsAsync(role))
                         await roleManager.CreateAsync(new IdentityRole(role));
-
                 }
-
             }
-           /* using (var scope = app.Services.CreateScope())
-            {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-                string email = "admin@admin.com";
-                string password = "Test1234,";
-
-                if (await userManager.FindByEmailAsync(email) == null)
-                {
-                    var user = new IdentityUser();
-                    user.UserName = email;
-                    user.Email = email;
-
-                    await userManager.CreateAsync(user, password);
-
-                    await userManager.AddToRoleAsync(user, "Admin");
-                }
-                */
-            
 
             using (var scope = app.Services.CreateScope())
             {
@@ -103,7 +94,6 @@ namespace TicketPortal09
                 await CreateRoleForEmail(userManager, "agent@example.com", "Agent");
                 await CreateRoleForEmail(userManager, "admin@example.com", "Admin");
             }
-
             app.Run();
         }
 
@@ -116,5 +106,8 @@ namespace TicketPortal09
                 await userManager.AddToRoleAsync(user, role);
             }
         }
+
+
     }
+
 }

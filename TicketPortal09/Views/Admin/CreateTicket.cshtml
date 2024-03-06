@@ -1,0 +1,46 @@
+﻿@model TicketPortal09.Models.Ticket
+
+<h1>Create Ticket</h1>
+
+<form asp-action="CreateTicket">
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CategoryId">Category</label>
+        <select asp-for="CategoryId" class="form-control">
+            <option value="">Select Category</option>
+            @foreach (var item in ViewData["CategoryId"] as SelectList)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="SubCategoryId">Subcategory</label>
+        <select asp-for="SubCategoryId" class="form-control">
+            <option value="">Select Subcategory</option>
+            @foreach (var item in ViewData["SubCategoryId"] as SelectList)
+            {
+                <option value="@item.Value">@item.Text</option>
+            }
+        </select>
+        <span asp-validation-for="SubCategoryId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form> 
+
+
+        
+
+

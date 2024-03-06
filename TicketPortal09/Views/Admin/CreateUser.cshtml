@@ -1,0 +1,105 @@
+﻿@model TicketPortal09.Models.RegisterUser
+
+<style>
+    .glassmorphic-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100vh;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(209, 218, 230, 0.2) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .glassmorphic-heading {
+        text-align: center;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+
+    .form-floating input.form-control {
+        background-color: rgba(255, 255, 255, 0.15);
+        border: none;
+        border-radius: 20px;
+        color: #fff;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .form-floating label {
+        color: #fff;
+    }
+
+    .form-floating input:focus {
+        background-color: rgba(255, 255, 255, 0.25);
+        outline: none;
+    }
+
+    .form-select {
+        background-color: rgba(255, 255, 255, 0.15);
+        border: none;
+        border-radius: 20px;
+        color: #fff;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        background-color: #4e73df;
+        border: none;
+        border-radius: 20px;
+        padding: 15px;
+        width: 100%;
+    }
+
+        .btn-primary:hover {
+            background-color: #375ab5;
+        }
+
+    .center-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+</style>
+
+<div class="center-container">
+    <div class="glassmorphic-container">
+        <h2 class="glassmorphic-heading">Add a new role</h2>
+        <hr />
+        <form id="registerForm" asp-action="CreateUser" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Email" class="form-control" autocomplete="on" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Email"></label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Password" class="form-control" type="password" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Password"></label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="ConfirmPassword"></label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <select asp-for="Role" class="form-select" aria-required="true">
+                    <option value="">Select Role</option>
+                    <option value="Agent">Agent</option>
+                    <option value="Manager">Manager</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+            <button id="registerSubmit" type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+</div>

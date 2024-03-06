@@ -1,0 +1,72 @@
+﻿@model TicketPortal09.Models.SubCategory
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<style>
+    .glassmorphic-container {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 20px;
+        max-width: 600px;
+        margin: auto; /* Center horizontally */
+        margin-top: 50px; /* Adjust vertical margin as needed */
+    }
+
+    .glassmorphic-heading {
+        text-align: center;
+        color: #fff; /* Change color as needed */
+    }
+
+    .glassmorphic-content {
+        margin-top: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .glassmorphic-button {
+        background-color: #007bff; /* Change button color */
+        color: #fff; /* Change button text color */
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        text-decoration: none;
+    }
+
+        .glassmorphic-button:hover {
+            background-color: #0056b3; /* Change button hover color */
+        }
+</style>
+
+<div class="glassmorphic-container">
+    <h1 class="glassmorphic-heading">Create SubCategory</h1>
+
+    <div class="glassmorphic-content">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="glassmorphic-button" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="glassmorphic-content">
+    <a asp-action="SubcategoryIndex" class="glassmorphic-button">Back to List</a>
+</div>

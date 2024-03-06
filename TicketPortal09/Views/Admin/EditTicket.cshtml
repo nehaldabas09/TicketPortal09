@@ -1,0 +1,54 @@
+﻿@model TicketPortal09.Models.Ticket
+
+@{
+    ViewData["Title"] = "Edit Ticket";
+
+    var categories = ViewBag.Categories as List<Category>;
+    var subCategory = ViewBag.SubCategories as List<SubCategory>;
+
+   
+}
+
+<h1>Edit Ticket</h1>
+
+<form asp-action="EditTicket" method="post">
+   
+   
+    @Model.AgentId
+    <div class="form-group">
+        <label asp-for="Title" class="control-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+        <input type="hidden" asp-for="TicketId" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CategoryId" class="control-label"></label>
+        <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(categories,"CategoryId", "Name"))">
+            <option value="">Select Category</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SubCategoryId" class="control-label"></label>
+        <select asp-for="SubCategoryId" class="form-control" asp-items="@(new SelectList(subCategory, "SubcategoryId", "Name"))">
+            <option value="">Select Subcategory</option>
+        </select>
+        <span asp-validation-for="SubCategoryId" class="text-danger"></span>
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="AgentId" />
+        <input type="hidden" asp-for="Status" />
+    </div>
+   
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+

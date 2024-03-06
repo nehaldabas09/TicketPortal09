@@ -1,0 +1,77 @@
+﻿@model IEnumerable<TicketPortal09.Models.SubCategory>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    .glassmorphic-link {
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 -2px 6px rgba(255, 255, 255, 0.3);
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 10px;
+        transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+        text-decoration: none;
+    }
+
+        .glassmorphic-link:hover {
+            background: rgba(255, 255, 255, 0.5);
+            color: #000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 -2px 8px rgba(255, 255, 255, 0.5);
+        }
+
+    .glassmorphic-table {
+        background: rgba(255, 255, 255, 0.2);
+        border-collapse: collapse;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 -2px 6px rgba(255, 255, 255, 0.2);
+        margin-top: 20px;
+    }
+
+        .glassmorphic-table th,
+        .glassmorphic-table td {
+            padding: 10px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .glassmorphic-table th {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .glassmorphic-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+</style>
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create" class="action-button">Create New</a>
+</p>
+<table class="glassmorphic-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Category.Name)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.SubcategoryId" class="glassmorphic-link">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.SubcategoryId" class="glassmorphic-link">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.SubcategoryId" class="glassmorphic-link">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

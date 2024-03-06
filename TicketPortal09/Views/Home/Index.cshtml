@@ -1,8 +1,88 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Ticket Portal 09";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-b3s99FUmV+3b+zBC+jc42x5EP4R8NSz6m7kXs8wABcG+8Mp2vBX7g3ynHVuwQ9Nl0jaG8Jwhl2KlY17IgQsUBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Your custom styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .welcome-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: #343a40;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .description {
+            font-size: 24px;
+            color: gold;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+
+        .pratext {
+            font-size: 16px;
+            color: navajowhite;
+            font-family: Arial, sans-serif;
+            font-weight: normal;
+        }
+
+        .fa-ticket-alt {
+            font-size: 100px;
+            color: #007bff;
+        }
+
+        .glassmorphic-layer {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 30px;
+            margin: 20px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="glassmorphic-layer">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h1 class="welcome-text">Welcome to Ticket Portal 09</h1>
+                    <H3 class="description">Your Gateway to Effortless Management!</H3>
+                    <p class="pratext">
+                        Step into a world where ticket management becomes an art form. At Ticket Portal 09, we redefine efficiency and elegance in handling your tasks, offering a seamless experience that transcends the mundane.
+                    </p>
+                    <p class="pratext">
+                        With our intuitive interface and cutting-edge features, managing your tickets has never been more delightful.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"></script>
+</body>
+</html>

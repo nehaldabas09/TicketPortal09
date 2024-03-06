@@ -10,5 +10,6 @@ namespace TicketPortal09.Models
 
         // Navigation property
        public ICollection<SubCategory>? Subategories { get; set; }
-   }
+       /* public ICollection<Ticket> Tickets { get; set; }*/
+    }
 }

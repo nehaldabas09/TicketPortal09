@@ -1,0 +1,102 @@
+﻿@model IEnumerable<TicketPortal09.Models.Ticket>
+
+<style>
+    /* Glassmorphic styles */
+    .glassmorphic-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        margin-bottom: 20px;
+    }
+
+    .glassmorphic-heading {
+        text-align: center;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+
+    .glassmorphic-table {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+        .glassmorphic-table th,
+        .glassmorphic-table td {
+            color: #fff;
+        }
+
+        .glassmorphic-table th {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .glassmorphic-table td {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .glassmorphic-table a {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+            .glassmorphic-table a:hover {
+                color: #fff;
+            }
+</style>
+
+<div class="glassmorphic-container">
+    <h1 class="glassmorphic-heading">Agent Tickets</h1>
+
+    <table class="table glassmorphic-table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CreatedAt)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ticket in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => ticket.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => ticket.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => ticket.CreatedAt)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => ticket.Status)
+                    </td>
+                    <td>
+                        <a asp-action="EditTicket" asp-route-id="@ticket.TicketId">Edit Status</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
