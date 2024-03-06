@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using TicketPortal09.Data;
-using TicketPortal09.Models;
-
-
-
-using Microsoft.AspNetCore.Identity;
+using Lamar.Microsoft.DependencyInjection;
+using TicketPortal09.Application;
+using Serilog;
 
 namespace TicketPortal09
 {
@@ -15,6 +12,7 @@ namespace TicketPortal09
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -28,8 +26,20 @@ namespace TicketPortal09
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<TicketDbContext>();
 
+            var logger = new LoggerConfiguration()
+             .ReadFrom.Configuration(builder.Configuration)
+             .Enrich.FromLogContext()
+            .CreateLogger();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog(logger);
+
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+
+            //Lamar Config
+            builder.Services.AddLamar(new ApplicationRegistry());
+            builder.Host.UseLamar();
 
             var app = builder.Build();
 
@@ -97,6 +107,7 @@ namespace TicketPortal09
             }
         }
 
-           
+
     }
+
 }

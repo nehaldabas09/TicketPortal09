@@ -1,94 +1,135 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using TicketPortal09.Data;
-
 using TicketPortal09.Models;
+using TicketPortal09.Services;
 
 namespace TicketPortal09.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly TicketDbContext _context;
+        private readonly ICategoriesService _categoriesService;
+        private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(TicketDbContext context)
+
+        public CategoriesController(ICategoriesService categoriesService, ILogger<CategoriesController> logger)
         {
-            _context = context;
+            _categoriesService = categoriesService;
+            _logger = logger;
         }
 
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            try
+            {
+
+                var categories = await _categoriesService.GetCategoriesAsync();
+                return View(categories);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
 
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
-            if (category == null)
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var category = await _categoriesService.GetCategoryByIdAsync(id.Value);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+
+                return View(category);
+            }
+            catch (Exception)
             {
-                return NotFound();
-            }
 
-            return View(category);
+                throw;
+            }
         }
 
         // GET: Categories/Create
         public IActionResult Create()
         {
-            return View();
+            try
+            {
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
 
         // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CategoryId,Name")] Category category)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                if (ModelState.IsValid)
+                {
+                    await _categoriesService.CreateCategoryAsync(category);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(category);
             }
-            return View(category);
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
 
         // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
 
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var category = await _categoriesService.GetCategoryByIdAsync(id.Value);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+                return View(category);
             }
-            return View(category);
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
 
         // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CategoryId,Name")] Category category)
         {
+
             if (id != category.CategoryId)
             {
                 return NotFound();
@@ -98,12 +139,11 @@ namespace TicketPortal09.Controllers
             {
                 try
                 {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    await _categoriesService.UpdateCategoryAsync(id, category);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(category.CategoryId))
+                    if (!_categoriesService.CategoryExists(id))
                     {
                         return NotFound();
                     }
@@ -120,19 +160,27 @@ namespace TicketPortal09.Controllers
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
-            if (category == null)
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var category = await _categoriesService.GetCategoryByIdAsync(id.Value);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+
+                return View(category);
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogInformation(ex.Message);
+                throw;
             }
-
-            return View(category);
         }
 
         // POST: Categories/Delete/5
@@ -140,19 +188,17 @@ namespace TicketPortal09.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            try
             {
-                _context.Categories.Remove(category);
+
+                await _categoriesService.DeleteCategoryAsync(id);
+                return RedirectToAction(nameof(Index));
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.CategoryId == id);
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
     }
 }

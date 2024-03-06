@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using TicketPortal09.Data;
 using TicketPortal09.Models;
+using TicketPortal09.Services;
 
 namespace TicketPortal09.Controllers
 {
@@ -17,60 +16,67 @@ namespace TicketPortal09.Controllers
     {
         private readonly TicketDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IManagerService _managerService;
+        private readonly ILogger<ManagerController> _logger;
 
-        public ManagerController(TicketDbContext context, UserManager<IdentityUser> userManager)
+        public ManagerController(TicketDbContext context, UserManager<IdentityUser> userManager, IManagerService managerService, ILogger<ManagerController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _managerService = managerService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> ManagerIndex()
         {
-            // Retrieve all tickets
-            var tickets = await _context.Tickets.ToListAsync();
-            return View(tickets);
+            try
+            {
+
+                var tickets = await _managerService.GetAllTicketsAsync();
+                return View(tickets);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
 
-        // GET: Manager/EditTicket/5
         // GET: Manager/EditTicket/5
         public async Task<IActionResult> ManagerEdit(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var ticket = await _context.Tickets.FindAsync(id);
-            if (ticket == null)
+                var ticket = await _context.Tickets.FindAsync(id);
+                if (ticket == null)
+                {
+                    return NotFound();
+                }
+
+                ViewData["AgentUsername"] = await GetAgentUsername(ticket.AgentId);
+                ViewData["AgentId"] = new SelectList(await _managerService.GetAgentsAsync(), "Id", "UserName", ticket.AgentId);
+
+                return View(ticket);
+
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogInformation(ex.Message);
+                throw;
             }
-
-            // Retrieve the agent's username
-            var agent = await _userManager.FindByIdAsync(ticket.AgentId);
-            if (agent != null)
-            {
-                ViewData["AgentUsername"] = agent.UserName;
-            }
-            else
-            {
-                // Handle the case where the agent is not found
-                ViewData["AgentUsername"] = "Not assigned";
-            }
-
-            // Populate the dropdown list with agent usernames
-            ViewData["AgentId"] = new SelectList(await _userManager.GetUsersInRoleAsync("Agent"), "Id", "UserName", ticket.AgentId);
-
-            return View(ticket);
         }
 
-
-        // POST: Manager/EditTicket/5
         // POST: Manager/EditTicket/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ManagerEdit(int id, Ticket ticket)
         {
+
             if (id != ticket.TicketId)
             {
                 return NotFound();
@@ -80,20 +86,17 @@ namespace TicketPortal09.Controllers
             {
                 try
                 {
-                    // Find the new agent by username
-                    var newAgent = await _userManager.FindByIdAsync(ticket.AgentId);
+                    var newAgent = await _managerService.FindUserByIdAsync(ticket.AgentId);
                     if (newAgent != null)
                     {
-                        // Update the ticket's agent
                         ticket.AgentId = newAgent.Id;
                         _context.Update(ticket);
                         await _context.SaveChangesAsync();
                     }
                     else
                     {
-                        // Handle the case where the user with the provided ID is not found
                         ModelState.AddModelError("AgentId", "Agent not found");
-                        ViewData["AgentId"] = new SelectList(await _userManager.GetUsersInRoleAsync("Agent"), "Id", "UserName", ticket.AgentId);
+                        ViewData["AgentId"] = new SelectList(await _managerService.GetAgentsAsync(), "Id", "UserName", ticket.AgentId);
                         return View(ticket);
                     }
                 }
@@ -111,27 +114,37 @@ namespace TicketPortal09.Controllers
                 return RedirectToAction(nameof(ManagerIndex));
             }
 
-            // Populate the dropdown list with agent usernames again if the model state is invalid
-            ViewData["AgentId"] = new SelectList(await _userManager.GetUsersInRoleAsync("Agent"), "Id", "UserName", ticket.AgentId);
+            ViewData["AgentId"] = new SelectList(await _managerService.GetAgentsAsync(), "Id", "UserName", ticket.AgentId);
 
             return View(ticket);
         }
 
+        private async Task<string> GetAgentUsername(string agentId)
+        {
+            try
+            {
+                var agent = await _managerService.FindUserByIdAsync(agentId);
+                return agent != null ? agent.UserName : "Not assigned";
 
-
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
+        }
 
         private bool TicketExists(int id)
         {
-            return _context.Tickets.Any(e => e.TicketId == id);
+            try
+            {
+                return _context.Tickets.Any(e => e.TicketId == id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
     }
 }
-
-
-/*private bool TicketExists(int id)
-        {
-            return _context.Tickets.Any(e => e.TicketId == id);
-        }
-    }
-}
-*/

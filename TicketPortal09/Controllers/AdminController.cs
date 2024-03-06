@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using TicketPortal09.Data;
 using TicketPortal09.Models;
+using TicketPortal09.Services; // Add this namespace
 
 namespace TicketPortal09.Controllers
 {
@@ -17,57 +18,76 @@ namespace TicketPortal09.Controllers
     {
         private readonly TicketDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IAdminService _adminService;
+        private readonly ILogger<AdminController> _logger;
 
-        public AdminController(TicketDbContext context, UserManager<IdentityUser> userManager)
+        public AdminController(TicketDbContext context, UserManager<IdentityUser> userManager, IAdminService adminService, ILogger<AdminController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _adminService = adminService;
+            _logger = logger;
         }
-
-
 
         // GET: Admin/Tickets
         public async Task<IActionResult> Tickets()
         {
-            
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
 
-           
-            var tickets = await _context.Tickets
-                .Where(t => t.UserId == currentUserId)
-                .ToListAsync();
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var tickets = await _context.Tickets
+                    .Where(t => t.UserId == currentUserId)
+                    .ToListAsync();
 
-            return View(tickets);
+                return View(tickets);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
 
         // GET: Admin/EditTicket/5
         public async Task<IActionResult> EditTicket(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
 
-            var ticket = await _context.Tickets.FindAsync(id);
-            if (ticket == null)
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var ticket = await _context.Tickets.FindAsync(id);
+                if (ticket == null)
+                {
+                    return NotFound();
+                }
+
+                var catorgies = await _context.Categories.ToListAsync();
+                ViewBag.Categories = catorgies;
+
+                var subCategories = await _context.Subcategories.ToListAsync();
+                ViewBag.SubCategories = subCategories;
+                return View(ticket);
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogInformation(ex.Message);
+                throw;
             }
-
-            var catorgies = await _context.Categories.ToListAsync(); 
-            ViewBag.Categories = catorgies;
-
-            var subCategories = await _context.Subcategories.ToListAsync();
-            ViewBag.SubCategories = subCategories;
-            return View(ticket);
         }
 
         // POST: Admin/EditTicket/5
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditTicket(int id,Ticket ticket)
+        public async Task<IActionResult> EditTicket(int id, Ticket ticket)
         {
+          
+         
             if (id != ticket.TicketId)
             {
                 return NotFound();
@@ -77,7 +97,6 @@ namespace TicketPortal09.Controllers
             {
                 try
                 {
-                    // Retrieve the existing ticket from the database
                     var existingTicket = await _context.Tickets.FindAsync(id);
 
                     if (existingTicket == null)
@@ -88,8 +107,6 @@ namespace TicketPortal09.Controllers
                     var subcategory = await _context.Subcategories.FindAsync(ticket.SubCategoryId);
                     var category = await _context.Categories.FindAsync(ticket.CategoryId);
 
-
-                    // Update the fields that need to be modified
                     existingTicket.Title = ticket.Title;
                     existingTicket.Description = ticket.Description;
                     existingTicket.CategoryId = ticket.CategoryId;
@@ -97,34 +114,25 @@ namespace TicketPortal09.Controllers
                     existingTicket.Category = category;
                     existingTicket.SubCategory = subcategory;
 
-                    // Save the changes to the database
                     _context.Update(existingTicket);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!TicketExists(ticket.TicketId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.LogInformation(ex.Message);
+                    throw;
                 }
                 return RedirectToAction(nameof(Tickets));
             }
 
-            // If the model state is not valid, return to the edit view with the ticket data
             return View(ticket);
         }
-
 
         // GET: Admin/CreateTicket
         public IActionResult CreateTicket()
         {
-
-
+            try
+            {
 
             var categories = _context.Categories.Select(c => new SelectListItem
             {
@@ -132,79 +140,84 @@ namespace TicketPortal09.Controllers
                 Text = c.Name
             }).ToList();
 
-            // Set the SelectList in ViewData
             ViewData["CategoryId"] = new SelectList(categories, "Value", "Text");
 
-            // Retrieve subcategories from the database and convert them into a SelectList
             var subcategories = _context.Subcategories.Select(s => new SelectListItem
             {
                 Value = s.SubcategoryId.ToString(),
                 Text = s.Name
             }).ToList();
 
-            // Set the SelectList in ViewData
             ViewData["SubcategoryId"] = new SelectList(subcategories, "Value", "Text");
 
             return View();
-
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
-
 
         // POST: Admin/CreateTicket
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTicket([Bind("Title,Description,CategoryId,SubCategoryId")] Ticket ticket)
         {
-            
-            
-                var agentRole = await _userManager.FindByNameAsync("Agent");
-                var agents = await _userManager.GetUsersInRoleAsync(agentRole.Id);
+            try
+            {
 
+            var agentId = await _adminService.GetAgentIdAsync();
 
-                if (ModelState.IsValid)
-                {
-                    // Retrieve the ID of the logged-in user
-                    string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (ModelState.IsValid)
+            {
+                string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                ticket.UserId = currentUserId;
+                ticket.AgentId = agentId;
 
-                    // Set the UserId property of the ticket
-                    ticket.UserId = currentUserId;
+                _context.Add(ticket);
+                await _context.SaveChangesAsync();
 
-                    // Retrieve the ID of an agent from your database (you can implement your logic to select an agent)
-                    string agentId = await GetAgentIdAsync();
-
-                    // Set the AgentId property of the ticket
-                    ticket.AgentId = agentId;
-
-                    // Add the ticket to the database
-                    _context.Add(ticket);
-                    await _context.SaveChangesAsync();
-
-                    return RedirectToAction(nameof(Tickets));
-                }
-                // If the ModelState is not valid, return the view with the submitted ticket model
-                return View(ticket);
+                return RedirectToAction(nameof(Tickets));
             }
-            
 
-        private async Task<string> GetAgentIdAsync()
-        {
-            // Find an agent with the "Agent" role
-            var agentRole = await _userManager.FindByNameAsync("Agent");
-            var agents = await _userManager.GetUsersInRoleAsync(agentRole.Id);
-
-            // Return the ID of the first agent found
-            return agents.FirstOrDefault()?.Id;
+            return View(ticket);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
 
         private bool TicketExists(int id)
         {
+            try
+            {
+
             return _context.Tickets.Any(e => e.TicketId == id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
 
         public IActionResult CreateUser()
         {
+            try
+            {
+
             return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+                throw;
+            }
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUser(RegisterUser user)
@@ -213,24 +226,20 @@ namespace TicketPortal09.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    
-                    
                     var checkEmailExsist = await _userManager.FindByEmailAsync(user.Email);
                     if (checkEmailExsist != null)
                     {
-                        ModelState.AddModelError("Email", "Email Already Exsists . Choose Another one");
+                        ModelState.AddModelError("Email", "Email Already Exists. Choose Another one");
                         return View(user);
                     }
+
                     IdentityUser agentUser = new() { Email = user.Email, UserName = user.Email };
                     var result = await _userManager.CreateAsync(agentUser, user.Password);
                     if (result.Succeeded)
                     {
                         await _userManager.AddToRoleAsync(agentUser, user.Role);
                         return RedirectToAction("Index", "Home");
-                       
                     }
-                  
-                  
                 }
                 return RedirectToAction("Agent");
             }
@@ -240,19 +249,5 @@ namespace TicketPortal09.Controllers
                 return RedirectToAction("Agent");
             }
         }
-
-
-
-
-
-
-
-
     }
-
-
-
-
-
 }
-
